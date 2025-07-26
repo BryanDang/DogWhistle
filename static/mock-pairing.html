@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DogWhistle - Mock Pairing Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        h1 {
+            font-size: 48px;
+            margin-bottom: 30px;
+        }
+        
+        .pairing-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 20px;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .pairing-animation {
+            width: 150px;
+            height: 150px;
+            border: 3px solid white;
+            border-radius: 50%;
+            position: relative;
+            animation: rotate 2s linear infinite;
+            margin-bottom: 30px;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .pairing-animation::before {
+            content: '🔊';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px;
+            animation: none;
+        }
+        
+        .status-text {
+            font-size: 24px;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        
+        .device-found {
+            background: rgba(255,255,255,0.15);
+            padding: 15px 30px;
+            border-radius: 50px;
+            margin: 10px;
+            display: inline-block;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 20px 50px;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .success-check {
+            font-size: 60px;
+            animation: checkmark 0.5s ease-out;
+        }
+        
+        @keyframes checkmark {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🐕</div>
+        <h1>DogWhistle</h1>
+        
+        <div class="pairing-card">
+            <div id="pairingState">
+                <div class="pairing-animation"></div>
+                <div class="status-text">Scanning for nearby devices...</div>
+            </div>
+            
+            <div id="devicesFound" class="hidden">
+                <div class="success-check">✅</div>
+                <div class="status-text">Devices paired successfully!</div>
+                <div id="deviceList" style="margin: 20px 0;"></div>
+            </div>
+            
+            <div id="recordingReady" class="hidden">
+                <button class="btn" onclick="startRecording()">
+                    🎤 Start Recording Meeting
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Simulate device discovery
+        const mockDevices = [
+            { name: "Bryan's iPhone", id: "A1B2" },
+            { name: "Adil's iPhone", id: "C3D4" }
+        ];
+        
+        let devicesAdded = 0;
+        
+        // Start the pairing simulation
+        setTimeout(() => {
+            document.getElementById('pairingState').classList.add('hidden');
+            document.getElementById('devicesFound').classList.remove('hidden');
+            
+            // Add devices one by one
+            const deviceList = document.getElementById('deviceList');
+            
+            mockDevices.forEach((device, index) => {
+                setTimeout(() => {
+                    const deviceEl = document.createElement('div');
+                    deviceEl.className = 'device-found';
+                    deviceEl.innerHTML = `📱 ${device.name} (${device.id})`;
+                    deviceList.appendChild(deviceEl);
+                    
+                    devicesAdded++;
+                    
+                    // Show recording button after all devices are found
+                    if (devicesAdded === mockDevices.length) {
+                        setTimeout(() => {
+                            document.getElementById('recordingReady').classList.remove('hidden');
+                        }, 500);
+                    }
+                }, index * 500);
+            });
+        }, 2500); // 2.5 second initial scan
+        
+        function startRecording() {
+            // Redirect to the recording interface
+            window.location.href = '/static/record.html';
+        }
+    </script>
+</body>
+</html>
