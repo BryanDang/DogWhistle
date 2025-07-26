@@ -48,27 +48,40 @@ class DogWhistleProcessor:
             
         except Exception as e:
             print(f"Error processing meeting {meeting_id}: {str(e)}")
+            print(f"Error type: {type(e).__name__}")
+            import traceback
+            print(f"Traceback: {traceback.format_exc()}")
             raise
     
     async def transcribe_audio(self, audio_file_path: str) -> str:
         """
         Transcribe audio using OpenAI Whisper API
         """
-        with open(audio_file_path, "rb") as audio_file:
-            transcription = await self.client.audio.transcriptions.create(
-                model="whisper-1",
-                file=audio_file,
-                response_format="verbose_json",  # Includes timestamps
-                language="en"  # Optional: specify language
-            )
-        
-        # Extract just the text for analysis
-        full_text = transcription.text
-        
-        # Store segments for future features (speaker detection, etc)
-        self.segments = transcription.segments if hasattr(transcription, 'segments') else []
-        
-        return full_text
+        try:
+            print(f"Opening audio file: {audio_file_path}")
+            print(f"File exists: {os.path.exists(audio_file_path)}")
+            print(f"File size: {os.path.getsize(audio_file_path) if os.path.exists(audio_file_path) else 'N/A'}")
+            
+            with open(audio_file_path, "rb") as audio_file:
+                print("Calling Whisper API...")
+                transcription = await self.client.audio.transcriptions.create(
+                    model="whisper-1",
+                    file=audio_file,
+                    language="en"  # Optional: specify language
+                )
+            
+            # Extract just the text for analysis
+            full_text = transcription.text
+            print(f"Transcription successful, length: {len(full_text)}")
+            
+            # Store segments for future features (speaker detection, etc)
+            self.segments = []
+            
+            return full_text
+        except Exception as e:
+            print(f"Transcription error: {str(e)}")
+            print(f"Error type: {type(e).__name__}")
+            raise
     
     async def analyze_transcript(self, transcript: str) -> Dict:
         """
