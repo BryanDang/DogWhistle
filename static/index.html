@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DogWhistle - AI Meeting Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #007AFF;
+            margin-bottom: 5px;
+        }
+        
+        .tagline {
+            color: #86868b;
+            font-size: 14px;
+        }
+        
+        .container {
+            flex: 1;
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .demo-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .ultrasonic-demo {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .pulse {
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            margin: 20px auto;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        .status {
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        
+        .upload-section {
+            text-align: center;
+            padding: 40px;
+            border: 2px dashed #007AFF;
+            border-radius: 12px;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .upload-section:hover {
+            background: #f0f8ff;
+        }
+        
+        .upload-section.active {
+            background: #e3f2fd;
+            border-color: #2196F3;
+        }
+        
+        .btn {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+        
+        .btn:hover {
+            background: #0051D5;
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #86868b;
+        }
+        
+        .progress-bar {
+            background: #e0e0e0;
+            height: 4px;
+            border-radius: 2px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: #007AFF;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .result-section {
+            background: #f5f5f7;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .result-section h3 {
+            color: #007AFF;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .action-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 8px 0;
+            border-left: 3px solid #007AFF;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .demo-controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .processing-status {
+            text-align: center;
+            padding: 20px;
+            font-size: 18px;
+            color: #007AFF;
+        }
+        
+        #audioPlayer {
+            width: 100%;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🐕 DogWhistle</div>
+        <div class="tagline">Never miss a moment - AI-powered meeting capture with consent</div>
+    </div>
+    
+    <div class="container">
+        <!-- Ultrasonic Demo Section -->
+        <div class="ultrasonic-demo">
+            <h2>Ultrasonic Consent Demo</h2>
+            <div class="pulse"></div>
+            <div class="status">Transmitting signature...</div>
+            <p style="margin-top: 20px; font-size: 14px; opacity: 0.9;">
+                In the real app, this uses ultrasonic sound to detect nearby DogWhistle users
+            </p>
+        </div>
+        
+        <!-- Upload Section -->
+        <div class="demo-card">
+            <h2 style="text-align: center; margin-bottom: 20px;">Try DogWhistle AI</h2>
+            
+            <div class="demo-controls">
+                <button class="btn btn-secondary" onclick="useSampleAudio()">
+                    📁 Use Sample Meeting
+                </button>
+                <button class="btn" onclick="document.getElementById('audioFile').click()">
+                    🎤 Upload Audio
+                </button>
+            </div>
+            
+            <input type="file" id="audioFile" accept="audio/*" style="display: none;" onchange="handleFileSelect(event)">
+            
+            <div id="uploadSection" class="upload-section hidden">
+                <p id="fileName">No file selected</p>
+                <audio id="audioPlayer" controls class="hidden"></audio>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="processBtn" class="btn hidden" onclick="processAudio()">
+                    🚀 Process with AI
+                </button>
+            </div>
+            
+            <!-- Progress Section -->
+            <div id="progressSection" class="hidden">
+                <div class="processing-status">
+                    <span id="statusText">Processing...</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results Section -->
+        <div id="results" class="results">
+            <div class="demo-card">
+                <h2 style="text-align: center; margin-bottom: 20px;">Meeting Intelligence Report</h2>
+                
+                <div class="result-section">
+                    <h3>📝 Summary</h3>
+                    <p id="summaryText"></p>
+                </div>
+                
+                <div class="result-section">
+                    <h3>✅ Action Items</h3>
+                    <div id="actionItems"></div>
+                </div>
+                
+                <div class="result-section">
+                    <h3>❓ Follow-up Questions</h3>
+                    <div id="followupQuestions"></div>
+                </div>
+                
+                <div class="result-section">
+                    <h3>📊 Meeting Stats</h3>
+                    <p id="meetingStats"></p>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-secondary" onclick="downloadReport()">
+                        📥 Download Report
+                    </button>
+                    <button class="btn" onclick="resetDemo()">
+                        🔄 Try Another
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentMeetingId = null;
+        let selectedFile = null;
+        
+        // API URL - change this for deployment
+        const API_URL = window.location.origin;
+        
+        function useSampleAudio() {
+            // Use the sample audio file
+            fetch('Sample meeting recording.m4a')
+                .then(response => response.blob())
+                .then(blob => {
+                    selectedFile = new File([blob], 'Sample meeting recording.m4a', { type: 'audio/mp4' });
+                    displaySelectedFile();
+                });
+        }
+        
+        function handleFileSelect(event) {
+            selectedFile = event.target.files[0];
+            if (selectedFile) {
+                displaySelectedFile();
+            }
+        }
+        
+        function displaySelectedFile() {
+            document.getElementById('uploadSection').classList.remove('hidden');
+            document.getElementById('fileName').textContent = `Selected: ${selectedFile.name}`;
+            document.getElementById('processBtn').classList.remove('hidden');
+            
+            // Show audio player
+            const audioPlayer = document.getElementById('audioPlayer');
+            audioPlayer.src = URL.createObjectURL(selectedFile);
+            audioPlayer.classList.remove('hidden');
+        }
+        
+        async function processAudio() {
+            if (!selectedFile) {
+                alert('Please select an audio file first');
+                return;
+            }
+            
+            // Show progress
+            document.getElementById('progressSection').classList.remove('hidden');
+            document.getElementById('processBtn').disabled = true;
+            
+            // Update status
+            updateStatus('Uploading audio...', 10);
+            
+            try {
+                // Upload audio
+                const formData = new FormData();
+                formData.append('audio_file', selectedFile);
+                
+                const uploadResponse = await fetch(`${API_URL}/api/meetings/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const uploadData = await uploadResponse.json();
+                currentMeetingId = uploadData.meeting_id;
+                
+                // Poll for results
+                updateStatus('Transcribing audio...', 30);
+                pollForResults();
+                
+            } catch (error) {
+                alert('Error: ' + error.message);
+                resetDemo();
+            }
+        }
+        
+        async function pollForResults() {
+            const checkStatus = async () => {
+                try {
+                    const response = await fetch(`${API_URL}/api/meetings/${currentMeetingId}/status`);
+                    const data = await response.json();
+                    
+                    if (data.status === 'completed') {
+                        updateStatus('Processing complete!', 100);
+                        await fetchResults();
+                    } else if (data.status === 'failed') {
+                        throw new Error('Processing failed');
+                    } else {
+                        // Update progress
+                        if (data.progress > 30) {
+                            updateStatus('Analyzing with AI...', data.progress);
+                        }
+                        // Continue polling
+                        setTimeout(checkStatus, 2000);
+                    }
+                } catch (error) {
+                    alert('Error checking status: ' + error.message);
+                    resetDemo();
+                }
+            };
+            
+            checkStatus();
+        }
+        
+        async function fetchResults() {
+            try {
+                const response = await fetch(`${API_URL}/api/meetings/${currentMeetingId}/results`);
+                const data = await response.json();
+                
+                displayResults(data);
+            } catch (error) {
+                alert('Error fetching results: ' + error.message);
+            }
+        }
+        
+        function displayResults(data) {
+            // Hide progress
+            document.getElementById('progressSection').classList.add('hidden');
+            
+            // Show results
+            document.getElementById('results').style.display = 'block';
+            
+            // Summary
+            document.getElementById('summaryText').textContent = data.analysis.summary.detailed;
+            
+            // Action items
+            const actionItemsDiv = document.getElementById('actionItems');
+            actionItemsDiv.innerHTML = '';
+            data.analysis.action_items.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'action-item';
+                div.innerHTML = `
+                    <strong>${index + 1}. ${item.task}</strong><br>
+                    <small>Priority: ${item.priority}</small>
+                `;
+                actionItemsDiv.appendChild(div);
+            });
+            
+            // Follow-up questions
+            const questionsDiv = document.getElementById('followupQuestions');
+            questionsDiv.innerHTML = '';
+            data.analysis.follow_up_questions.forEach((question, index) => {
+                const div = document.createElement('div');
+                div.className = 'action-item';
+                div.textContent = `${index + 1}. ${question}`;
+                questionsDiv.appendChild(div);
+            });
+            
+            // Stats
+            document.getElementById('meetingStats').innerHTML = `
+                <strong>Duration:</strong> ${data.transcript.duration_estimate}<br>
+                <strong>Word Count:</strong> ${data.transcript.word_count}<br>
+                <strong>Topics:</strong> ${data.analysis.topics_discussed.join(', ')}<br>
+                <strong>Sentiment:</strong> ${data.analysis.sentiment}<br>
+                <strong>Meeting Type:</strong> ${data.analysis.meeting_type}
+            `;
+            
+            // Smooth scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function updateStatus(text, progress) {
+            document.getElementById('statusText').textContent = text;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+        }
+        
+        async function downloadReport() {
+            if (!currentMeetingId) return;
+            
+            window.open(`${API_URL}/api/meetings/${currentMeetingId}/download`, '_blank');
+        }
+        
+        function resetDemo() {
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('progressSection').classList.add('hidden');
+            document.getElementById('processBtn').disabled = false;
+            document.getElementById('uploadSection').classList.add('hidden');
+            document.getElementById('processBtn').classList.add('hidden');
+            currentMeetingId = null;
+            selectedFile = null;
+            updateStatus('Processing...', 0);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+DogWhistle
+Adil Jussupov & Bryan Dang
+
+Adil
+Petroleum Engineer → Mechatronics → Stanford → Accessibility Engineering → Startup
+
+Bryan
+RN + HCI → PM at Syminar → Stanford → AI/ML Research Engineer
+Every day, we leave insights on the table—ideas, decisions, even commitments—lost because we forgot to hit record. We built a way to fix that, without interrupting the flow of conversation.
+
+
+We all know the pain of walking out of a meeting and thinking this.
+
+AI summaries are powerful—but only work if the conversation gets recorded in the first place
+
+“Damn—we should’ve recorded that!”
+
+Recording is opt-in—it can kill conversation spontaneity. 
+
+When you ask, it gets awkward–can change the tone, or put-off certain sharing entirely
+
+When no one asks, then moments, ideas, and actionables are lost.
+
+Problem
+
+Impact
+DogWhistle turns the awkward ask into a discreet handshake—consent, comfort, and clarity, minus the friction. 
+
+It’s like capturing lightning in a bottle—after the storm has passed.
+
+Live Demo
+
+A DogWhistle device always emits and listens for an ambient ultrasonic ping. 
+
+Other nearby DogWhistle-loaded devices pick it up silently, begin recording ambiently.
+Under the hood
+
+
+After the conversation, everyone gets a nudge: ‘Would you like to revoke consent to a shared meeting transcript?’ 
+
+You always can ‘opt out’ to wipe meeting file from being uploaded and processed.
+
+If both sides consent, everyone gets audio file-access (for transcripts, summary, etc)
+Under the hood
+
+Our Marketplace for integrations brings DogWhistle users to 3rd party apps.
+Summaries
+Follow-up questions
+Action items
+Pitchdecks
+Moodboards
+Next Steps
+
+DogWhistle Summary
+DogWhistle is always ambient recording, like the dashcam on your Tesla. 
+
+Establishes a recording when it hears a response ping from the other users in the conversation—consent, comfort, and clarity, minus the friction. 
+
+
+

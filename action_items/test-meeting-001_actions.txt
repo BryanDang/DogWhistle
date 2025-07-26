@@ -1,0 +1,28 @@
+DOGWHISTLE ACTION ITEMS
+Meeting ID: test-meeting-001
+Generated: 2025-07-26 13:31:05
+
+ACTION ITEMS
+==================================================
+
+1. Research existing apps with similar functionalities.
+   Owner: Unspecified
+   Due: Unspecified
+   Priority: high
+
+2. Explore potential monetization strategies, including payment options for professional conversations.
+   Owner: Unspecified
+   Due: Unspecified
+   Priority: medium
+
+3. Consider integration with productivity and collaborative apps.
+   Owner: Unspecified
+   Due: Unspecified
+   Priority: medium
+
+
+FOLLOW-UP QUESTIONS
+==================================================
+1. What specific productivity apps should we target for integration?
+2. How will we ensure user privacy and data security in the app?
+3. What are the potential legal implications of recording conversations with AI?

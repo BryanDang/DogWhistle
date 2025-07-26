@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DogWhistle - Ultrasonic Pairing Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            z-index: 10;
+        }
+        
+        .logo {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .frequency-display {
+            font-size: 36px;
+            color: #667eea;
+            margin: 20px 0;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .status {
+            font-size: 20px;
+            color: #888;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #333;
+        }
+        
+        .sonic-wave {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            pointer-events: none;
+        }
+        
+        .wave-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid #667eea;
+            border-radius: 50%;
+            opacity: 0;
+        }
+        
+        .wave-ring.active {
+            animation: sonic-pulse 2s ease-out infinite;
+        }
+        
+        @keyframes sonic-pulse {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 1;
+            }
+            100% {
+                width: 400px;
+                height: 400px;
+                opacity: 0;
+            }
+        }
+        
+        .device-info {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .device-id {
+            font-size: 24px;
+            color: #764ba2;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        
+        .paired-devices {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+        }
+        
+        .paired-device {
+            display: inline-block;
+            margin: 5px;
+            padding: 10px 20px;
+            background: #667eea;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .visualizer {
+            width: 100%;
+            height: 100px;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .freq-bar {
+            position: absolute;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            transition: height 0.05s;
+        }
+        
+        .warning {
+            background: rgba(255, 204, 0, 0.2);
+            border: 1px solid #ffcc00;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #ffcc00;
+        }
+        
+        .demo-mode {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-mode">Demo Mode</div>
+    
+    <div class="sonic-wave">
+        <div class="wave-ring"></div>
+        <div class="wave-ring" style="animation-delay: 0.5s"></div>
+        <div class="wave-ring" style="animation-delay: 1s"></div>
+        <div class="wave-ring" style="animation-delay: 1.5s"></div>
+    </div>
+    
+    <div class="container">
+        <div class="logo">🐕</div>
+        <h1>DogWhistle</h1>
+        <p class="tagline">Ultrasonic Meeting Pairing</p>
+        
+        <div class="device-info">
+            <h3>Your Device Signature</h3>
+            <div class="device-id" id="deviceId">Generating...</div>
+            <div class="frequency-display" id="frequency">17.5 kHz</div>
+        </div>
+        
+        <div class="visualizer" id="visualizer"></div>
+        
+        <div class="status" id="status">Ready to transmit ultrasonic signature</div>
+        
+        <div>
+            <button class="btn" id="transmitBtn" onclick="toggleTransmit()">
+                🔊 Start Transmitting
+            </button>
+            <button class="btn btn-secondary" id="listenBtn" onclick="toggleListen()">
+                🎧 Listen for Others
+            </button>
+        </div>
+        
+        <div class="warning">
+            ⚠️ Demo uses 17-18 kHz (within human hearing range). 
+            Most people will hear a high-pitched tone. Real implementation would use 20+ kHz (truly ultrasonic).
+        </div>
+        
+        <div class="paired-devices" id="pairedDevices" style="display: none;">
+            <h3>Detected Devices</h3>
+            <div id="deviceList"></div>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <button class="btn" onclick="startRecordingSession()" id="recordBtn" style="display: none;">
+                🎤 Start Group Recording
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        let audioContext;
+        let oscillator;
+        let analyser;
+        let microphone;
+        let isTransmitting = false;
+        let isListening = false;
+        let deviceId;
+        let deviceFrequency;
+        let detectedDevices = new Set();
+        
+        // Initialize
+        window.onload = function() {
+            // Generate unique device ID and frequency
+            deviceId = generateDeviceId();
+            deviceFrequency = 17000 + (parseInt(deviceId, 16) % 1000); // 17-18 kHz range
+            
+            document.getElementById('deviceId').textContent = deviceId;
+            document.getElementById('frequency').textContent = (deviceFrequency / 1000).toFixed(1) + ' kHz';
+            
+            // Initialize audio context
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Set up visualizer
+            initVisualizer();
+        };
+        
+        function generateDeviceId() {
+            return Math.random().toString(16).substr(2, 6).toUpperCase();
+        }
+        
+        function initVisualizer() {
+            const visualizer = document.getElementById('visualizer');
+            for (let i = 0; i < 60; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'freq-bar';
+                bar.style.left = `${(i / 60) * 100}%`;
+                visualizer.appendChild(bar);
+            }
+        }
+        
+        function toggleTransmit() {
+            if (!isTransmitting) {
+                startTransmitting();
+            } else {
+                stopTransmitting();
+            }
+        }
+        
+        function startTransmitting() {
+            // Create oscillator for ultrasonic tone
+            oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Set frequency (17-18 kHz range)
+            oscillator.frequency.setValueAtTime(deviceFrequency, audioContext.currentTime);
+            
+            // Lower volume to be less annoying (especially at 17 kHz)
+            gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+            
+            // Add modulation to encode device ID
+            const lfo = audioContext.createOscillator();
+            const lfoGain = audioContext.createGain();
+            
+            lfo.frequency.setValueAtTime(parseInt(deviceId, 16) % 50 + 10, audioContext.currentTime); // 10-60 Hz modulation
+            lfoGain.gain.setValueAtTime(50, audioContext.currentTime);
+            
+            lfo.connect(lfoGain);
+            lfoGain.connect(oscillator.frequency);
+            lfo.start();
+            
+            oscillator.start();
+            isTransmitting = true;
+            
+            // Update UI
+            document.getElementById('transmitBtn').textContent = '⏹ Stop Transmitting';
+            document.getElementById('status').textContent = `Transmitting at ${(deviceFrequency / 1000).toFixed(1)} kHz`;
+            document.querySelectorAll('.wave-ring').forEach(ring => ring.classList.add('active'));
+            
+            // Visualize transmission
+            animateTransmission();
+        }
+        
+        function stopTransmitting() {
+            if (oscillator) {
+                oscillator.stop();
+                oscillator = null;
+            }
+            
+            isTransmitting = false;
+            
+            // Update UI
+            document.getElementById('transmitBtn').textContent = '🔊 Start Transmitting';
+            document.getElementById('status').textContent = 'Transmission stopped';
+            document.querySelectorAll('.wave-ring').forEach(ring => ring.classList.remove('active'));
+        }
+        
+        function toggleListen() {
+            if (!isListening) {
+                startListening();
+            } else {
+                stopListening();
+            }
+        }
+        
+        async function startListening() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                microphone = audioContext.createMediaStreamSource(stream);
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 4096; // Higher resolution for frequency detection
+                
+                microphone.connect(analyser);
+                
+                isListening = true;
+                document.getElementById('listenBtn').textContent = '⏹ Stop Listening';
+                document.getElementById('status').textContent = 'Listening for ultrasonic signatures...';
+                
+                // Start frequency analysis
+                detectFrequencies();
+                
+            } catch (error) {
+                alert('Microphone access required for listening');
+            }
+        }
+        
+        function stopListening() {
+            if (microphone) {
+                microphone.disconnect();
+                microphone = null;
+            }
+            
+            isListening = false;
+            document.getElementById('listenBtn').textContent = '🎧 Listen for Others';
+            document.getElementById('status').textContent = 'Stopped listening';
+        }
+        
+        function detectFrequencies() {
+            if (!isListening) return;
+            
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Float32Array(bufferLength);
+            analyser.getFloatFrequencyData(dataArray);
+            
+            // Frequency resolution
+            const sampleRate = audioContext.sampleRate;
+            const binSize = sampleRate / analyser.fftSize;
+            
+            // Look for peaks in 17-18 kHz range
+            const startBin = Math.floor(17000 / binSize);
+            const endBin = Math.floor(18000 / binSize);
+            
+            for (let i = startBin; i < endBin; i++) {
+                if (dataArray[i] > -50) { // Threshold for detection
+                    const frequency = i * binSize;
+                    const deviceCode = Math.floor((frequency - 17000)).toString(16).toUpperCase();
+                    
+                    if (deviceCode !== deviceId && !detectedDevices.has(deviceCode)) {
+                        detectedDevices.add(deviceCode);
+                        addDetectedDevice(deviceCode, frequency);
+                    }
+                }
+            }
+            
+            // Update visualizer
+            updateVisualizer(dataArray, startBin, endBin);
+            
+            requestAnimationFrame(detectFrequencies);
+        }
+        
+        function addDetectedDevice(id, frequency) {
+            document.getElementById('pairedDevices').style.display = 'block';
+            const deviceList = document.getElementById('deviceList');
+            
+            const deviceElement = document.createElement('div');
+            deviceElement.className = 'paired-device';
+            deviceElement.textContent = `Device ${id} (${(frequency / 1000).toFixed(1)} kHz)`;
+            deviceList.appendChild(deviceElement);
+            
+            document.getElementById('status').textContent = `Detected device: ${id}`;
+            
+            // Show record button when devices are paired
+            if (detectedDevices.size > 0) {
+                document.getElementById('recordBtn').style.display = 'inline-block';
+            }
+            
+            // Simulate pairing animation
+            setTimeout(() => {
+                deviceElement.style.background = '#34c759';
+            }, 500);
+        }
+        
+        function updateVisualizer(dataArray, startBin, endBin) {
+            const bars = document.querySelectorAll('.freq-bar');
+            const range = endBin - startBin;
+            
+            bars.forEach((bar, i) => {
+                const binIndex = startBin + Math.floor((i / bars.length) * range);
+                const value = Math.max(0, dataArray[binIndex] + 100) / 100;
+                bar.style.height = `${value * 100}%`;
+                
+                // Highlight detected frequencies
+                if (value > 0.5) {
+                    bar.style.background = 'linear-gradient(to top, #ff3b30, #ffcc00)';
+                } else {
+                    bar.style.background = 'linear-gradient(to top, #667eea, #764ba2)';
+                }
+            });
+        }
+        
+        function animateTransmission() {
+            if (!isTransmitting) return;
+            
+            const bars = document.querySelectorAll('.freq-bar');
+            const centerBar = Math.floor(bars.length / 2);
+            
+            bars.forEach((bar, i) => {
+                const distance = Math.abs(i - centerBar);
+                const height = Math.max(0, 100 - distance * 3);
+                bar.style.height = `${height}%`;
+            });
+            
+            requestAnimationFrame(animateTransmission);
+        }
+        
+        function startRecordingSession() {
+            // Redirect to recording interface with paired devices
+            const devices = Array.from(detectedDevices);
+            devices.push(deviceId); // Include self
+            
+            // In real app, this would start a group recording session
+            alert(`Starting recording session with ${devices.length} devices:\n${devices.join(', ')}`);
+            
+            // Redirect to multi-user recording
+            window.location.href = '/static/multi-user.html?devices=' + devices.join(',');
+        }
+    </script>
+</body>
+</html>

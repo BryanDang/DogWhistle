@@ -1,0 +1,20 @@
+DOGWHISTLE MEETING SUMMARY
+Meeting ID: test-meeting-001
+Generated: 2025-07-26 13:31:05
+
+EXECUTIVE SUMMARY
+--------------------
+The meeting focused on brainstorming an app that facilitates AI-assisted conversation recording with user consent, exploring potential features and monetization strategies.
+
+DETAILED SUMMARY
+--------------------
+The team discussed the concept of an app designed to record conversations with user consent, using a high-pitched sound to trigger consent notifications. The app aims to integrate seamlessly with productivity and collaborative apps, allowing users to manage recording preferences. The discussion also touched on potential monetization strategies, such as enabling paid conversations for professionals or celebrities. The team agreed to research existing solutions and consider future hardware integration, while deferring additional feature development to avoid distractions.
+
+KEY INSIGHTS
+--------------------
+• The app aims to reduce friction in obtaining user consent for recording conversations.
+• Monetization could involve enabling paid interactions for professional or celebrity conversations.
+
+TOPICS DISCUSSED: AI-assisted conversation recording, User consent mechanisms, Monetization strategies
+MEETING TYPE: brainstorm
+OVERALL SENTIMENT: positive

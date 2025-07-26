@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DogWhistle - Live Recording Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .container {
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            z-index: 10;
+        }
+        
+        .logo {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .tagline {
+            font-size: 18px;
+            color: #888;
+            margin-bottom: 40px;
+        }
+        
+        .record-btn {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: none;
+            background: #ff3b30;
+            color: white;
+            font-size: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 40px rgba(255, 59, 48, 0.5);
+        }
+        
+        .record-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 60px rgba(255, 59, 48, 0.7);
+        }
+        
+        .record-btn.recording {
+            background: #ff3b30;
+            animation: pulse-red 1.5s infinite;
+        }
+        
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 40px rgba(255, 59, 48, 0.5); }
+            50% { box-shadow: 0 0 80px rgba(255, 59, 48, 0.9); }
+            100% { box-shadow: 0 0 40px rgba(255, 59, 48, 0.5); }
+        }
+        
+        .timer {
+            font-size: 32px;
+            margin-bottom: 20px;
+            font-variant-numeric: tabular-nums;
+            height: 40px;
+        }
+        
+        .status {
+            font-size: 20px;
+            margin-bottom: 30px;
+            color: #888;
+        }
+        
+        .visualizer {
+            width: 100%;
+            height: 100px;
+            margin: 30px 0;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bar {
+            position: absolute;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            transition: height 0.1s;
+        }
+        
+        .results {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+            display: none;
+            text-align: left;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .results h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .result-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+        
+        .result-section h3 {
+            color: #764ba2;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .action-item {
+            padding: 10px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+        
+        .processing {
+            display: none;
+            margin: 30px 0;
+        }
+        
+        .processing-animation {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+        }
+        
+        /* Background animation */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.3;
+        }
+        
+        .wave {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: radial-gradient(circle, transparent, rgba(102, 126, 234, 0.1));
+            animation: wave 10s linear infinite;
+        }
+        
+        @keyframes wave {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .instructions {
+            color: #666;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="wave"></div>
+    </div>
+    
+    <div class="container">
+        <div class="logo">🐕</div>
+        <h1>DogWhistle</h1>
+        <p class="tagline">AI-powered meeting intelligence</p>
+        
+        <div class="timer" id="timer"></div>
+        
+        <button class="record-btn" id="recordBtn" onclick="toggleRecording()">
+            <span id="recordIcon">🎤</span>
+        </button>
+        
+        <div class="status" id="status">Click to start recording</div>
+        
+        <div class="visualizer" id="visualizer"></div>
+        
+        <div class="processing" id="processing">
+            <div class="processing-animation"></div>
+            <p>Processing with AI...</p>
+        </div>
+        
+        <div class="results" id="results">
+            <h2>Meeting Intelligence Report</h2>
+            
+            <div class="result-section">
+                <h3>📝 Summary</h3>
+                <p id="summaryText"></p>
+            </div>
+            
+            <div class="result-section">
+                <h3>✅ Action Items</h3>
+                <div id="actionItems"></div>
+            </div>
+            
+            <div class="result-section">
+                <h3>❓ Follow-up Questions</h3>
+                <div id="followupQuestions"></div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="downloadReport()">📥 Download Report</button>
+                <button class="btn" onclick="resetDemo()">🔄 Record Again</button>
+            </div>
+        </div>
+        
+        <p class="instructions">
+            Have a quick conversation with your team, then stop to see AI insights
+        </p>
+    </div>
+    
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        let startTime;
+        let timerInterval;
+        let currentMeetingId;
+        let audioContext;
+        let analyser;
+        let microphone;
+        
+        // Initialize visualizer
+        function initVisualizer() {
+            const visualizer = document.getElementById('visualizer');
+            for (let i = 0; i < 50; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.left = `${i * 2}%`;
+                visualizer.appendChild(bar);
+            }
+        }
+        
+        initVisualizer();
+        
+        async function toggleRecording() {
+            if (!isRecording) {
+                startRecording();
+            } else {
+                stopRecording();
+            }
+        }
+        
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                // Set up audio visualization
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                microphone = audioContext.createMediaStreamSource(stream);
+                microphone.connect(analyser);
+                analyser.fftSize = 256;
+                
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                
+                function updateVisualizer() {
+                    if (!isRecording) return;
+                    
+                    analyser.getByteFrequencyData(dataArray);
+                    const bars = document.querySelectorAll('.bar');
+                    
+                    bars.forEach((bar, i) => {
+                        const value = dataArray[i * 2] || 0;
+                        bar.style.height = `${(value / 255) * 100}%`;
+                    });
+                    
+                    requestAnimationFrame(updateVisualizer);
+                }
+                
+                updateVisualizer();
+                
+                // Start recording
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+                
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    await processAudio(audioBlob);
+                };
+                
+                mediaRecorder.start();
+                isRecording = true;
+                startTime = Date.now();
+                
+                // Update UI
+                document.getElementById('recordBtn').classList.add('recording');
+                document.getElementById('recordIcon').textContent = '⏹';
+                document.getElementById('status').textContent = 'Recording... (click to stop)';
+                
+                // Start timer
+                timerInterval = setInterval(updateTimer, 100);
+                
+            } catch (error) {
+                alert('Microphone access denied. Please allow microphone access to use this demo.');
+                console.error('Error accessing microphone:', error);
+            }
+        }
+        
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
+            
+            isRecording = false;
+            clearInterval(timerInterval);
+            
+            // Stop visualization
+            if (microphone) {
+                microphone.disconnect();
+                audioContext.close();
+            }
+            
+            // Reset bars
+            document.querySelectorAll('.bar').forEach(bar => {
+                bar.style.height = '0';
+            });
+            
+            // Update UI
+            document.getElementById('recordBtn').classList.remove('recording');
+            document.getElementById('recordIcon').textContent = '🎤';
+            document.getElementById('status').textContent = 'Processing...';
+        }
+        
+        function updateTimer() {
+            const elapsed = Date.now() - startTime;
+            const seconds = Math.floor(elapsed / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const displaySeconds = seconds % 60;
+            
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${displaySeconds.toString().padStart(2, '0')}`;
+        }
+        
+        async function processAudio(audioBlob) {
+            // Show processing animation
+            document.getElementById('processing').style.display = 'block';
+            document.getElementById('visualizer').style.display = 'none';
+            
+            try {
+                // Convert webm to a format OpenAI accepts
+                const formData = new FormData();
+                formData.append('audio_file', audioBlob, 'recording.webm');
+                
+                // Upload to API
+                const uploadResponse = await fetch('/api/meetings/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const uploadData = await uploadResponse.json();
+                currentMeetingId = uploadData.meeting_id;
+                
+                // Poll for results
+                pollForResults();
+                
+            } catch (error) {
+                alert('Error processing audio: ' + error.message);
+                resetDemo();
+            }
+        }
+        
+        async function pollForResults() {
+            const checkStatus = async () => {
+                try {
+                    const response = await fetch(`/api/meetings/${currentMeetingId}/status`);
+                    const data = await response.json();
+                    
+                    if (data.status === 'completed') {
+                        await fetchResults();
+                    } else if (data.status === 'failed') {
+                        throw new Error('Processing failed');
+                    } else {
+                        setTimeout(checkStatus, 2000);
+                    }
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                    resetDemo();
+                }
+            };
+            
+            checkStatus();
+        }
+        
+        async function fetchResults() {
+            try {
+                const response = await fetch(`/api/meetings/${currentMeetingId}/results`);
+                const data = await response.json();
+                
+                displayResults(data);
+            } catch (error) {
+                alert('Error fetching results: ' + error.message);
+            }
+        }
+        
+        function displayResults(data) {
+            // Hide processing
+            document.getElementById('processing').style.display = 'none';
+            
+            // Show results
+            document.getElementById('results').style.display = 'block';
+            
+            // Summary
+            document.getElementById('summaryText').textContent = data.analysis.summary.detailed;
+            
+            // Action items
+            const actionItemsDiv = document.getElementById('actionItems');
+            actionItemsDiv.innerHTML = '';
+            data.analysis.action_items.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'action-item';
+                div.innerHTML = `<strong>${index + 1}. ${item.task}</strong><br>
+                               <small>Priority: ${item.priority}</small>`;
+                actionItemsDiv.appendChild(div);
+            });
+            
+            // Follow-up questions
+            const questionsDiv = document.getElementById('followupQuestions');
+            questionsDiv.innerHTML = '';
+            data.analysis.follow_up_questions.forEach((question, index) => {
+                const div = document.createElement('div');
+                div.className = 'action-item';
+                div.textContent = `${index + 1}. ${question}`;
+                questionsDiv.appendChild(div);
+            });
+            
+            // Update status
+            document.getElementById('status').textContent = 'Analysis complete!';
+        }
+        
+        async function downloadReport() {
+            window.open(`/api/meetings/${currentMeetingId}/download`, '_blank');
+        }
+        
+        function resetDemo() {
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('processing').style.display = 'none';
+            document.getElementById('visualizer').style.display = 'block';
+            document.getElementById('timer').textContent = '';
+            document.getElementById('status').textContent = 'Click to start recording';
+            audioChunks = [];
+            currentMeetingId = null;
+        }
+    </script>
+</body>
+</html>
