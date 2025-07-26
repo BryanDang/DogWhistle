@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DogWhistle - Hackathon Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            font-size: 20px;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+        
+        .demo-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+            display: inline-block;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .feature {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+        }
+        
+        .feature h3 {
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        .demo-flow {
+            display: flex;
+            justify-content: space-around;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 150px;
+            margin: 10px;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+        }
+        
+        .step-number {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .pulse {
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo pulse">🐕</div>
+        <h1>DogWhistle</h1>
+        <p class="tagline">AI-Powered Meeting Intelligence</p>
+        
+        <div class="demo-card">
+            <h2>Choose Your Demo</h2>
+            
+            <div class="feature">
+                <h3>🎤 Live Recording Demo</h3>
+                <p>Record a conversation and see AI-generated insights in real-time</p>
+                <a href="/static/record.html" class="btn">Try Recording Demo</a>
+            </div>
+            
+            <div class="feature">
+                <h3>👥 Multi-User Meeting Demo</h3>
+                <p>See how multiple participants get the same meeting insights</p>
+                <a href="/static/multi-user.html" class="btn">Try Multi-User Demo</a>
+            </div>
+            
+            <div class="feature">
+                <h3>🔊 Ultrasonic Concept Demo</h3>
+                <p>Visual demonstration of our ultrasonic pairing technology</p>
+                <a href="/static/ultrasonic-demo.html" class="btn btn-secondary">View Concept</a>
+            </div>
+        </div>
+        
+        <div class="demo-card">
+            <h2>How DogWhistle Works</h2>
+            <div class="demo-flow">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <p>Devices emit ultrasonic signatures</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <p>Automatic consent & pairing</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <p>AI processes conversation</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <p>Everyone gets insights</p>
+                </div>
+            </div>
+        </div>
+        
+        <p style="margin-top: 40px; opacity: 0.8;">
+            🏆 Built for hackathon demo - Production version uses 20+ kHz ultrasonic
+        </p>
+    </div>
+</body>
+</html>
