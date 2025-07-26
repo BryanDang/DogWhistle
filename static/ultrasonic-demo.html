@@ -329,6 +329,9 @@
             
             // Visualize transmission
             animateTransmission();
+            
+            // Check if both transmit and listen are active
+            checkForAutoRedirect();
         }
         
         function stopTransmitting() {
@@ -369,6 +372,9 @@
                 
                 // Start frequency analysis
                 detectFrequencies();
+                
+                // Check if both transmit and listen are active
+                checkForAutoRedirect();
                 
             } catch (error) {
                 alert('Microphone access required for listening');
@@ -472,6 +478,23 @@
             });
             
             requestAnimationFrame(animateTransmission);
+        }
+        
+        function checkForAutoRedirect() {
+            // If both transmitting and listening, auto-redirect after 2 seconds
+            if (isTransmitting && isListening) {
+                document.getElementById('status').textContent = 'Pairing successful! Starting recording...';
+                
+                // Show success animation
+                document.getElementById('pairedDevices').style.display = 'block';
+                const deviceList = document.getElementById('deviceList');
+                deviceList.innerHTML = '<div class="paired-device" style="background: #34c759;">✅ Devices paired</div>';
+                
+                // Auto-redirect to recording after 2 seconds
+                setTimeout(() => {
+                    window.location.href = '/static/record.html';
+                }, 2000);
+            }
         }
         
         function startRecordingSession() {
