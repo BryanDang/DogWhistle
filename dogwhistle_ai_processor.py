@@ -18,9 +18,8 @@ class DogWhistleProcessor:
     """Main processor for DogWhistle audio files"""
     
     def __init__(self):
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise ValueError("OPENAI_API_KEY environment variable must be set")
+        # Hardcoded for hackathon demo - DO NOT use in production
+        api_key = os.getenv("OPENAI_API_KEY", "sk-proj-Qx0Q4dqfT4BlbkFJ6wUpOQiTI0JwFdOPIXcW7jSm")
         self.client = AsyncOpenAI(api_key=api_key)
     
     async def process_meeting(self, audio_file_path: str, meeting_id: str) -> Dict:
