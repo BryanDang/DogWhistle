@@ -169,8 +169,9 @@
             </div>
             
             <div id="recordingReady" class="hidden">
+                <p style="margin-bottom: 20px; font-size: 18px; opacity: 0.9;">Redirecting to recording...</p>
                 <button class="btn" onclick="startRecording()">
-                    🎤 Start Recording Meeting
+                    🎤 Start Recording Now
                 </button>
             </div>
         </div>
@@ -202,10 +203,14 @@
                     
                     devicesAdded++;
                     
-                    // Show recording button after all devices are found
+                    // Auto-redirect to recording after all devices are found
                     if (devicesAdded === mockDevices.length) {
                         setTimeout(() => {
                             document.getElementById('recordingReady').classList.remove('hidden');
+                            // Auto-redirect after showing the button briefly
+                            setTimeout(() => {
+                                window.location.href = '/static/record.html';
+                            }, 1500); // Wait 1.5 seconds then auto-redirect
                         }, 500);
                     }
                 }, index * 500);
